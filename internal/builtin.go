@@ -55,5 +55,16 @@ func Exit(arg []string){
 }
 
 func Cd(arg []string){
-	
+	if len(arg)<2 && 2<len(arg){
+		return
+	}
+	_,err := os.Stat(arg[1])
+	if err!=nil {
+		fmt.Printf("cd: %s: No such file or directory\n",arg[1])
+		return
+	}
+	if filepath.IsAbs(arg[1]){
+		os.Chdir(arg[1])
+		return
+	}
 }
