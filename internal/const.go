@@ -10,7 +10,7 @@ func init() {
     builtins["type"] = Type
     builtins["pwd"] = Pwd
 	builtins["exit"] = Exit
-	builtins["cd"] = Cd
+	builtins["cd"] = Cd 
 }
 
 
