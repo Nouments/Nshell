@@ -1,35 +1,59 @@
 package internal
 
-import(
+import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 )
 
-type Command struct {
-	Name string
+func checkBuiltin(cmd []string) bool {
+	_, exist := builtins[cmd[0]]
+	return exist
 }
 
-
-
-builtins := []Command{
-		{Name: "echo"},
-		{Name: "exit"},
-		{Name: "type"},
-		{Name: "pwd"},
-}
-
-func checkBuiltin(cmd string) bool{
-	for _,builtin :=  range builtins {
-		if cmd == builtin {
-			return true
-		}
+func Echo(arg []string) {
+	if len(arg) < 2 {
+		fmt.Println("")
+		return
 	}
-	return false
+	fmt.Println(strings.Join(arg[1:], " "))
 }
 
-
-func Echo(arg []string){
-	fmt.Println(strings.Join(arg," "))
+func Type(arg []string) {
+	if len(arg) < 2 {
+		fmt.Println("")
+		return
+	}
+	if checkBuiltin(arg[1:]) {
+		fmt.Printf("%s is a shell builtin\n", arg[1])
+		return
+	}
+	PATH, err := SearchBinary(arg[1])
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("%s is %s\n", arg[1], PATH)
 }
 
-func Type(string)
+func Pwd(arg []string) {
+	cwd, err := filepath.Abs(".")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(cwd)
+}
+
+func Exit(arg []string){
+	if len(arg)!=1{
+		fmt.Println("exit doesn't need argument")
+		
+	}
+	os.Exit(0)
+}
+
+func Cd(arg []string){
+	
+}
