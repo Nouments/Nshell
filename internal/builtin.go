@@ -46,25 +46,57 @@ func Pwd(arg []string) {
 	fmt.Println(cwd)
 }
 
-func Exit(arg []string){
-	if len(arg)!=1{
+func Exit(arg []string) {
+	if len(arg) != 1 {
 		fmt.Println("exit doesn't need argument")
-		
+
 	}
 	os.Exit(0)
 }
 
-func Cd(arg []string){
-	if len(arg)<2 && 2<len(arg){
+func Cd(arg []string) {
+	if len(arg) != 2 {
 		return
 	}
-	_,err := os.Stat(arg[1])
-	if err!=nil {
-		fmt.Printf("cd: %s: No such file or directory\n",arg[1])
+
+	if filepath.IsAbs(arg[1]) {
+		err:=os.Chdir(arg[1])
+		if err!=nil{
+			fmt.Printf("cd: %s: No such file or directory\n", arg[1] )
+		}
 		return
 	}
-	if filepath.IsAbs(arg[1]){
-		os.Chdir(arg[1])
+	switch {
+	case strings.HasPrefix(arg[1], "~"):
+		homepath, err := os.UserHomeDir()
+		if err != nil {
+			return
+		}
+		if len((arg[1])) > 1 {
+			homepath = filepath.Join(homepath, arg[1][2:])
+		}
+		err = os.Chdir(homepath)
+		if err!=nil{
+			fmt.Printf("cd: %s: No such file or directory\n", arg[1] )
+		}
 		return
+
+	case strings.HasPrefix(arg[1], "./"):
+		cwd, err := filepath.Abs(".")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		err = os.Chdir(filepath.Join(cwd, arg[1]))
+		if err!=nil{
+			fmt.Printf("cd: %s: No such file or directory\n", arg[1] )
+		}
+
+	default:
+		path := filepath.Clean(arg[1])
+		err := os.Chdir(path)
+		if err != nil {
+			fmt.Printf("cd: %s: No such file or directory\n", arg[1] )
+		}
 	}
 }
