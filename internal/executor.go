@@ -3,6 +3,9 @@ package internal
 import "fmt"
 
 func Execute(cmd []string) {
+	if len(cmd) == 0 {
+		return
+	}
 	if checkBuiltin(cmd) {
 		builtins[cmd[0]](cmd)
 		return
